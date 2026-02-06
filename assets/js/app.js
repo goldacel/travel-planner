@@ -8,7 +8,7 @@ import { renderDetail } from "./ui.detail.js";
  *    너가 준 URL 그대로 붙여넣기 (절대 자르지 말기)
  */
 const SHEET_API_GET =
-    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLioYcnc4leDmuo7TLXzYxoxXDjX_6V3kzRmXEVobnfjq3MhSpOoXnRPm-tJZIQeKVWx97yxtwZz0EK2S3tkYuzyFtEl_hPP9FDW5LcVlbpfh7jb57U8wuKn98GNivcpEhqzF4gMqekx6b19nqKTZ2CuYp7KHnGB3nFS3RO5jCLZEB4dslI0IdsV_IPLiqq55eTToO3OvjDrTK9nrnxJaJOrRs5y2reMqiwSgRYER898bLej37ocFcQS8gpYY8B685VRPLxgTmjAvJTBKMhB8IRc8EEG0JfH5kEjTGqH&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
+    "https://script.google.com/macros/s/AKfycbxSp1RePmkKQCcUdFLvY2mv9_najLUeRpYqUryYY3Vkkab_fhLHe1PDIxGpyC0HmfakjQ/exec";
 
 /**
  * ✅ POST(등록)용: 보통 exec (script.google.com) 가 안정적
@@ -20,7 +20,7 @@ const SHEET_API_GET =
  *     댓글 등록/평점 저장까지 하려면 반드시 exec로 바꿔줘.)
  */
 const SHEET_API_POST =
-    "https://script.google.com/macros/s/AKfycbxEripFjx5rwXTxY_07HG7zZM71Tgx6ASS2Rgcm2opGS28h-DGC0v4PYqybMiRx2eAzvQ/exec";
+    "https://script.google.com/macros/s/AKfycbxSp1RePmkKQCcUdFLvY2mv9_najLUeRpYqUryYY3Vkkab_fhLHe1PDIxGpyC0HmfakjQ/exec";
 
 // DOM
 const gridBodyEl = document.getElementById("gridBody");
