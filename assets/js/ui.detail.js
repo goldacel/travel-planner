@@ -1,23 +1,23 @@
-function starsText(avg) {
-    if (avg == null) return "¡Ù¡Ù¡Ù¡Ù¡Ù";
-    const full = Math.round(avg); // Æò±ÕÀ» ´ëÃæ ¹İ¿Ã¸² Ç¥½Ã
+ï»¿function starsText(avg) {
+    if (avg == null) return "â˜†â˜†â˜†â˜†â˜†";
+    const full = Math.round(avg); // í‰ê· ì„ ëŒ€ì¶© ë°˜ì˜¬ë¦¼ í‘œì‹œ
     const empty = 5 - full;
-    return "¡Ú".repeat(full) + "¡Ù".repeat(empty);
+    return "â˜…".repeat(full) + "â˜†".repeat(empty);
 }
 
 export function renderDetail({ els, place, avg, count }) {
     const { nameEl, descEl, avgEl, countEl, starsEl } = els;
 
     if (!place) {
-        nameEl.textContent = "¼±ÅÃµÈ Ç×¸ñÀÌ ¾ø½À´Ï´Ù.";
-        descEl.textContent = "Ç¥¿¡¼­ Ç×¸ñÀ» Å¬¸¯ÇÏ¸é Ç¥½ÃµË´Ï´Ù.";
+        nameEl.textContent = "ì„ íƒëœ í•­ëª©ì´ ì—†ìŠµë‹ˆë‹¤.";
+        descEl.textContent = "í‘œì—ì„œ í•­ëª©ì„ í´ë¦­í•˜ë©´ í‘œì‹œë©ë‹ˆë‹¤.";
         avgEl.textContent = "-";
         countEl.textContent = "-";
-        starsEl.textContent = "¡Ù¡Ù¡Ù¡Ù¡Ù";
+        starsEl.textContent = "â˜†â˜†â˜†â˜†â˜†";
         return;
     }
 
-    nameEl.textContent = `${place.name} (${place.category} ¡¤ ${place.day}¹ø)`;
+    nameEl.textContent = `${place.name} (${place.category} Â· ${place.day}ë²ˆ)`;
     descEl.textContent = place.desc || "-";
     avgEl.textContent = (avg == null) ? "-" : String(avg);
     countEl.textContent = (count == null) ? "-" : String(count);
