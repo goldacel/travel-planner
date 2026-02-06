@@ -1,0 +1,116 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>가치 여행</title>
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+    <div class="wrap">
+        <header class="titlebar">
+            <div class="title">가치 여행</div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link active">메인</a>
+            </nav>
+        </header>
+
+        <div class="top">
+            <section class="grid-card">
+                <div class="grid-head">
+                    <div class="grid-title">추천표</div>
+                    <div class="muted" id="loadStateText">불러오는 중…</div>
+                </div>
+
+                <!-- ✅ 가로 스크롤 -->
+                <div class="grid-scroll">
+                    <table aria-label="추천표">
+                        <thead>
+                            <tr>
+                                <th class="rowhead">구분</th>
+                                <th class="colhead">1</th>
+                                <th class="colhead">2</th>
+                                <th class="colhead">3</th>
+                                <th class="colhead">4</th>
+                                <th class="colhead">5</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gridBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="hint">
+                    오른쪽 list 토글이 ON이면 클릭 시 list에 담기/해제 + 상세 표시,
+                    OFF면 상세만 표시됩니다.
+                </div>
+            </section>
+
+            <aside class="list-card">
+                <div class="list-head">
+                    <div class="label">
+                        <label class="list-toggle" title="list 활성화">
+                            <input type="checkbox" id="listEnable" checked />
+                            <span class="toggle-icon" aria-hidden="true"></span>
+                            <span class="toggle-text">list</span>
+                        </label>
+                    </div>
+                    <div class="pill" id="countPill">0개</div>
+                </div>
+
+                <ul class="list" id="pickedList"></ul>
+                <div class="empty" id="emptyMsg">
+                    아직 담긴 항목이 없어요.<br />
+                    표에서 클릭해보세요.
+                </div>
+            </aside>
+        </div>
+
+        <section class="detail" aria-label="상세">
+            <div class="box">
+                <h3>선택한 장소</h3>
+                <div id="detailName" class="muted">선택된 항목이 없습니다.</div>
+
+                <h3 class="mt">설명</h3>
+                <div id="detailDesc" class="muted">표에서 항목을 클릭하면 표시됩니다.</div>
+
+                <div class="stat-row">
+                    <div class="stat">
+                        <div class="stat-label">평균</div>
+                        <div class="stat-value" id="detailAvg">-</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">리뷰 수</div>
+                        <div class="stat-value" id="detailCount">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h3>별점 남기기</h3>
+                <div class="star-input" id="starInput" aria-label="별점 입력">
+                    <button type="button" data-v="1">★</button>
+                    <button type="button" data-v="2">★</button>
+                    <button type="button" data-v="3">★</button>
+                    <button type="button" data-v="4">★</button>
+                    <button type="button" data-v="5">★</button>
+                </div>
+                <div class="stars" id="detailStars">☆☆☆☆☆</div>
+
+                <h3 class="mt">댓글</h3>
+                <div class="comment-list" id="commentList"></div>
+
+                <div class="comment-write">
+                    <input id="userInput" placeholder="이름(선택)" />
+                    <textarea id="commentInput" placeholder="후기를 남겨주세요"></textarea>
+                    <button id="commentSubmit" type="button">등록</button>
+                </div>
+
+                <div class="muted" id="saveHint">선택된 항목이 없어요.</div>
+            </div>
+        </section>
+    </div>
+
+    <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
