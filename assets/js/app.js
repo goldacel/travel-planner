@@ -5,7 +5,7 @@ import { renderDetail } from "./ui.detail.js";
 
 /** ✅ 여기에 Apps Script “웹 앱 URL” 붙여넣기 */
 const SHEET_API =
-    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgqbBaT_7MvNmXNp1PDrCE0pQvegUJKk1TkKdVFnyrzUr_5qR65luit4ES9-WnZ1gdN7b29KPQQfJ2DrN7XmGdP0OdDi9Aolavh0YXNERhfCJ__IgO_Q44DyVn-G6_66cNPhYszgZ_nl3T833tVfglz2KLPplF97rbZqjQtK5NEFYagzyVK3GP2flvTldgItvcGxIsnJpO-rVCvlA3YLeOHmlOtS5g5NAy2Xci2SBo2AYNVfu2aXLDQCDV3dQ_5zhLCU5s_0TLp8btahEaxzDRPEtqb-yIm8Ubmakf6&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
+    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgBKOzSE8MCjha7fmW9PENDKY99HAMcW4mdtpnogUGLdIUVFI16Y_YYlm91f6zGV6md5_WI625kVXATovc3q9dFwEmCBAYix_RakMJlCJq_BjqnuG0eox9E_9yb6i7YnNnTXGgcnn7jvslNdnTxiRDIkJp-ag7zQ2Srnm_7CGHnZdFb45MTOe6Ehbg3rUoV4Yh-ifE038VGm7_LRiK2JDJfpn8gT6Q2sD648oPL4a2g5A0m4M27xnNTDl_D3SSpAEHzRfy6LViPNwix7JPGYjC8wcuvjK0Gk5fJmfMn&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
 
 /**
  * ✅ Neocities에서 구글 웹앱 fetch 시 CORS가 자주 막혀서 프록시 사용
