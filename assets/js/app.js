@@ -5,7 +5,7 @@ import { renderDetail } from "./ui.detail.js";
 
 /** ✅ 여기에 Apps Script “웹 앱 URL” 붙여넣기 */
 const SHEET_API =
-    "https://script.google.com/macros/s/AKfycbxEripFjx5rwXTxY_07HG7zZM71Tgx6ASS2Rgcm2opGS28h-DGC0v4PYqybMiRx2eAzvQ/exec";
+    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgqbBaT_7MvNmXNp1PDrCE0pQvegUJKk1TkKdVFnyrzUr_5qR65luit4ES9-WnZ1gdN7b29KPQQfJ2DrN7XmGdP0OdDi9Aolavh0YXNERhfCJ__IgO_Q44DyVn-G6_66cNPhYszgZ_nl3T833tVfglz2KLPplF97rbZqjQtK5NEFYagzyVK3GP2flvTldgItvcGxIsnJpO-rVCvlA3YLeOHmlOtS5g5NAy2Xci2SBo2AYNVfu2aXLDQCDV3dQ_5zhLCU5s_0TLp8btahEaxzDRPEtqb-yIm8Ubmakf6&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
 
 /**
  * ✅ Neocities에서 구글 웹앱 fetch 시 CORS가 자주 막혀서 프록시 사용
