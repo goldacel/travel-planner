@@ -3,16 +3,24 @@ import { buildGrid } from "./ui.grid.js";
 import { renderList } from "./ui.list.js";
 import { renderDetail } from "./ui.detail.js";
 
-/** ✅ 여기에 Apps Script “웹 앱 URL” 붙여넣기 */
-const SHEET_API =
-    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgBKOzSE8MCjha7fmW9PENDKY99HAMcW4mdtpnogUGLdIUVFI16Y_YYlm91f6zGV6md5_WI625kVXATovc3q9dFwEmCBAYix_RakMJlCJq_BjqnuG0eox9E_9yb6i7YnNnTXGgcnn7jvslNdnTxiRDIkJp-ag7zQ2Srnm_7CGHnZdFb45MTOe6Ehbg3rUoV4Yh-ifE038VGm7_LRiK2JDJfpn8gT6Q2sD648oPL4a2g5A0m4M27xnNTDl_D3SSpAEHzRfy6LViPNwix7JPGYjC8wcuvjK0Gk5fJmfMn&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
+/**
+ * ✅ GET(조회)용: googleusercontent (CORS 통과 잘 됨)
+ *    너가 준 URL 그대로 붙여넣기 (절대 자르지 말기)
+ */
+const SHEET_API_GET =
+    "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLioYcnc4leDmuo7TLXzYxoxXDjX_6V3kzRmXEVobnfjq3MhSpOoXnRPm-tJZIQeKVWx97yxtwZz0EK2S3tkYuzyFtEl_hPP9FDW5LcVlbpfh7jb57U8wuKn98GNivcpEhqzF4gMqekx6b19nqKTZ2CuYp7KHnGB3nFS3RO5jCLZEB4dslI0IdsV_IPLiqq55eTToO3OvjDrTK9nrnxJaJOrRs5y2reMqiwSgRYER898bLej37ocFcQS8gpYY8B685VRPLxgTmjAvJTBKMhB8IRc8EEG0JfH5kEjTGqH&lib=MvqYV48JvS23Rx5L0rf7F7NBebZ79jD0H";
 
 /**
- * ✅ Neocities에서 구글 웹앱 fetch 시 CORS가 자주 막혀서 프록시 사용
- * - 로컬/VS Live Server에서도 잘 동작
+ * ✅ POST(등록)용: 보통 exec (script.google.com) 가 안정적
+ *    여기에는 "웹 앱 URL(/exec)" 넣어야 함.
+ *    예: https://script.google.com/macros/s/XXXX/exec
+ *
+ * ⚠️ 지금 너는 이 값이 없으면 댓글 등록이 실패할 수 있어.
+ *    (장소 불러오기만 할 거면 임시로 GET과 동일하게 둬도 되지만,
+ *     댓글 등록/평점 저장까지 하려면 반드시 exec로 바꿔줘.)
  */
-const CORS_PROXY = "https://cors.isomorphic-git.org/";
-const API = (path = "") => `${CORS_PROXY}${SHEET_API}${path}`;
+const SHEET_API_POST =
+    "https://script.google.com/macros/s/AKfycbxEripFjx5rwXTxY_07HG7zZM71Tgx6ASS2Rgcm2opGS28h-DGC0v4PYqybMiRx2eAzvQ/exec";
 
 // DOM
 const gridBodyEl = document.getElementById("gridBody");
@@ -47,9 +55,9 @@ const state = {
 
 let places = [];
 let placeMap = new Map();
-let categories = ["숙박", "음식점", "관광"]; // 기본 순서(시트에 없는 카테고리도 표시 순서는 이걸로)
+let categories = ["숙박", "음식점", "관광"];
 
-// 평균/리뷰 캐시 (현재 활성 place)
+// 리뷰 캐시
 let currentAvg = null;
 let currentCount = null;
 let currentReviews = [];
@@ -71,7 +79,6 @@ function getActivePlace() {
 
 function getPickedItems() {
     if (!state.listEnabled) return [];
-
     const arr = Array.from(state.pickedIds)
         .map((id) => placeMap.get(id))
         .filter(Boolean);
@@ -103,18 +110,25 @@ function paintStars(v) {
     });
 }
 
+/** ✅ googleusercontent처럼 이미 쿼리가 있는 URL에도 파라미터 안전하게 붙임 */
+function withParams(base, params) {
+    const u = new URL(base);
+    Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+    return u.toString();
+}
+
 // ---------- API ----------
 async function apiGetPlaces() {
-    const res = await fetch(API(`?action=places`));
+    const url = withParams(SHEET_API_GET, { action: "places" });
+    const res = await fetch(url);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || "places load fail");
     return json.places;
 }
 
 async function apiGetReviews(placeId) {
-    const res = await fetch(
-        API(`?action=reviews&placeId=${encodeURIComponent(placeId)}`)
-    );
+    const url = withParams(SHEET_API_GET, { action: "reviews", placeId });
+    const res = await fetch(url);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || "reviews load fail");
     return json; // {reviews, avg, count}
@@ -129,13 +143,8 @@ async function apiPostReview({ placeId, rating, comment, user }) {
         user,
     });
 
-    // 프록시/Neocities 환경에서 preflight 최소화하려고 text/plain 사용
-    const res = await fetch(API(""), {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: payload,
-    });
-
+    // ⚠️ exec 쪽으로 POST
+    const res = await fetch(SHEET_API_POST, { method: "POST", body: payload });
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || "post fail");
 }
@@ -190,8 +199,7 @@ async function refreshReviewsForActive() {
         currentAvg = avg == null ? null : avg;
         currentCount = count == null ? null : count;
         currentReviews = Array.isArray(reviews) ? reviews : [];
-    } catch (e) {
-        // 댓글/평균 못 불러와도 UI는 유지
+    } catch {
         currentAvg = null;
         currentCount = null;
         currentReviews = [];
@@ -202,7 +210,6 @@ async function refreshReviewsForActive() {
 
 // ---------- render ----------
 function renderAll() {
-    // list toggle
     if (listEnableEl) {
         listEnableEl.checked = state.listEnabled;
         listEnableEl.onchange = () => {
@@ -212,28 +219,26 @@ function renderAll() {
         };
     }
 
-    // grid
     buildGrid({
         gridBodyEl,
         categories,
         places,
         isPicked: (id) => state.listEnabled && state.pickedIds.has(id),
         onCellClick: (place) => {
-            // 클릭하면 항상 상세 표시
+            // ✅ 클릭하면 항상 상세 표시
             state.activeId = place.id;
 
-            // list 토글 ON일 때만 담기/해제
+            // ✅ list ON일 때만 담기/해제
             if (state.listEnabled) {
                 if (state.pickedIds.has(place.id)) state.pickedIds.delete(place.id);
                 else state.pickedIds.add(place.id);
             }
 
             persist();
-            refreshReviewsForActive().then(() => renderAll()); // 평균/댓글 받아오고 다시 렌더
+            refreshReviewsForActive().then(() => renderAll());
         },
     });
 
-    // list
     const items = getPickedItems();
     renderList({
         listEl: pickedListEl,
@@ -248,7 +253,6 @@ function renderAll() {
         },
     });
 
-    // detail
     renderDetail({
         els: detailEls,
         place: getActivePlace(),
@@ -256,22 +260,19 @@ function renderAll() {
         count: currentCount,
     });
 
-    // star UI 활성/비활성
     const active = getActivePlace();
     if (!active) {
-        if (saveHintEl) saveHintEl.textContent = "선택된 항목이 없어요.";
-        if (commentSubmitEl) commentSubmitEl.disabled = true;
+        saveHintEl.textContent = "선택된 항목이 없어요.";
+        commentSubmitEl.disabled = true;
         if (commentInputEl) commentInputEl.disabled = true;
         if (userInputEl) userInputEl.disabled = true;
         draftRating = 5;
         paintStars(draftRating);
     } else {
-        if (saveHintEl) {
-            saveHintEl.textContent = state.listEnabled
-                ? "별 클릭 → 댓글 입력 → 등록"
-                : "list OFF 상태에서도 댓글 등록은 가능";
-        }
-        if (commentSubmitEl) commentSubmitEl.disabled = false;
+        saveHintEl.textContent = state.listEnabled
+            ? "별 클릭 → 댓글 입력 → 등록"
+            : "list OFF 상태에서도 댓글 등록은 가능";
+        commentSubmitEl.disabled = false;
         if (commentInputEl) commentInputEl.disabled = false;
         if (userInputEl) userInputEl.disabled = false;
         paintStars(draftRating);
@@ -293,19 +294,14 @@ if (commentSubmitEl) {
         const p = getActivePlace();
         if (!p) return;
 
-        const user = (userInputEl?.value || "").trim() || "익명";
-        const comment = (commentInputEl?.value || "").trim();
+        const user = (userInputEl.value || "").trim() || "익명";
+        const comment = (commentInputEl.value || "").trim();
         if (!comment) return;
 
         commentSubmitEl.disabled = true;
         try {
-            await apiPostReview({
-                placeId: p.id,
-                rating: draftRating,
-                comment,
-                user,
-            });
-            if (commentInputEl) commentInputEl.value = "";
+            await apiPostReview({ placeId: p.id, rating: draftRating, comment, user });
+            commentInputEl.value = "";
             await refreshReviewsForActive();
         } catch (e) {
             alert("댓글 저장 실패: " + (e.message || e));
@@ -319,25 +315,21 @@ if (commentSubmitEl) {
 // ---------- boot ----------
 async function boot() {
     try {
-        if (loadStateTextEl) loadStateTextEl.textContent = "장소 불러오는 중…";
+        loadStateTextEl.textContent = "장소 불러오는 중…";
         places = await apiGetPlaces();
 
-        // category 목록을 시트 기준으로 확장
         const catSet = new Set(categories);
         for (const p of places) catSet.add(p.category);
         categories = Array.from(catSet);
 
         placeMap = new Map(places.map((p) => [p.id, p]));
-
-        // activeId가 유효하지 않으면 초기화
         if (state.activeId && !placeMap.has(state.activeId)) state.activeId = null;
 
-        if (loadStateTextEl) loadStateTextEl.textContent = "불러오기 완료";
+        loadStateTextEl.textContent = "불러오기 완료";
         await refreshReviewsForActive();
         renderAll();
     } catch (e) {
-        if (loadStateTextEl)
-            loadStateTextEl.textContent = "불러오기 실패(시트/URL 확인)";
+        loadStateTextEl.textContent = "불러오기 실패(시트/URL 확인)";
         alert("Places 로드 실패: " + (e.message || e));
     }
 }
